@@ -38,6 +38,15 @@ function build_prompt {
   if $git_status; then
     prompt_segment green black '${(e)git_info[prompt]}${git_info[status]}'
   fi
+
+  itunesstatus=`osascript -e 'tell application "iTunes" to player state as string'`
+  if [[ $itunesstatus = "playing" ]]; then
+    track=`osascript -e 'tell application "iTunes" to name of current track as string'`
+    artist=`osascript -e 'tell application "iTunes" to artist of current track as string'`
+    prompt_segment black white "♫ $track - $artist "
+  fi
+
+  prompt_segment white red "%D{%p %L:%:%S}"
   prompt_end
 }
 
@@ -74,6 +83,7 @@ function prompt_paradox_precmd {
   if [[ $timer_result -gt 10 ]]; then
     calc_elapsed_time
   fi
+
   start_time=$SECONDS
 }
 
@@ -114,7 +124,7 @@ function prompt_paradox_setup {
   PROMPT='
 %{%f%b%k%}$(build_prompt)
  ${editor_info[keymap]} '
-  RPROMPT='[%D{%L:%M:%S %p}]'
+  RPROMPT=''
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
